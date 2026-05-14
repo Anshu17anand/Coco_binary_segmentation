@@ -1,0 +1,186 @@
+# COCO Binary Segmentation (Dog Class)
+
+This project implements an **end-to-end binary image segmentation pipeline** using **PyTorch** and a **U-Net** architecture on the **COCO train2017 dataset**.  
+The goal is to segment a single object category (dog) from natural images and evaluate performance using **IoU** and **Dice** metrics.
+
+The project emphasizes **correct ML workflow**, **loss design**, **data handling**, and **evaluation**, rather than achieving state-of-the-art performance.
+
+---
+
+## Problem Setup
+
+- **Task:** Binary segmentation (dog vs background)
+- **Dataset:** COCO train2017
+- **Images used:** ~250
+- **Input resolution:** 256 × 256
+- **Framework:** PyTorch
+
+---
+
+## Dataset Split
+
+The dataset is split at the **image level** to avoid data leakage:
+
+- **Train:** 175 images  
+- **Validation:** 37 images  
+- **Test:** 38 images  
+
+Split ratio ≈ **70 / 15 / 15**
+
+- Train set is used for weight updates
+- Validation set is used to monitor performance
+- Test set is held out for final evaluation only
+
+---
+
+## Model
+
+- **Architecture:** U-Net
+- **Training:** From scratch (no pretrained backbone)
+- **Reason for choice:**
+  - Encoder–decoder structure suitable for segmentation
+  - Skip connections preserve spatial detail
+  - Standard and interpretable baseline
+
+---
+
+## Training Details
+
+- **Optimizer:** Adam
+- **Loss Function:** Binary Cross Entropy + Dice Loss  
+- **Epochs:** 25
+- **Batch size:** 4
+
+### Why BCE + Dice?
+- BCE provides pixel-wise supervision
+- Dice directly optimizes overlap and mitigates class imbalance
+- Combination prevents trivial background-only predictions
+
+---
+
+## Major Challenges & Solutions
+
+### 1. Extreme Class Imbalance
+- Background pixels vastly outnumber foreground pixels
+- Initial model predicted background everywhere
+
+**Solution:**  
+Switched from pure BCE to **BCE + Dice loss**, which penalizes missing foreground overlap.
+
+---
+
+### 2. Loss Decreases but Predictions Are Empty
+- Model converged to a trivial minimum
+
+**Diagnosis:**  
+Expected behavior under imbalance, not a bug.
+
+**Solution:**  
+Improved loss design and increased dataset size.
+
+---
+
+### 3. Limited Data Signal
+- Small datasets (50–150 images) insufficient for learning object diversity
+
+**Solution:**  
+Incrementally increased dataset size to ~250 images.
+
+---
+
+### 4. Dataset Leakage Risk
+- COCO annotations reference images not downloaded locally
+
+**Solution:**  
+Splits are generated **only from locally available image IDs**, ensuring consistency.
+
+---
+
+## Evaluation Metrics
+
+### Intersection over Union (IoU)
+
+\[
+IoU = \frac{|Prediction \cap GroundTruth|}{|Prediction \cup GroundTruth|}
+\]
+
+- Strict overlap metric
+- Commonly requested in benchmarks
+
+---
+
+### Dice Coefficient
+
+\[
+Dice = \frac{2 |Prediction \cap GroundTruth|}{|Prediction| + |GroundTruth|}
+\]
+
+- More robust to class imbalance
+- Standard in segmentation and medical imaging
+
+**Relationship:**
+
+\[
+IoU = \frac{Dice}{2 - Dice}
+\]
+
+---
+
+## Results (Baseline)
+
+- **Validation IoU:** ~0.20  
+- **Test IoU:** ~0.20  
+- **Dice:** ~0.29  
+
+### Interpretation
+- Coarse but meaningful segmentation
+- Predictions capture object regions but lack boundary precision
+- Expected performance given:
+  - Small dataset
+  - No pretraining
+  - Natural image complexity (COCO)
+
+---
+
+## Qualitative Results
+
+- Model learns coarse object shape and location
+- Masks are fragmented and noisy
+- Qualitative visualization used alongside metrics to diagnose behavior
+
+---
+
+## What Improves Performance Most
+
+- Increasing dataset size
+- Better loss design
+- Longer training
+- Data augmentation
+- Pretrained encoders (future work)
+
+---
+
+## Future Improvements
+
+- Data augmentation (flip, scale, crop)
+- Pretrained encoder (e.g., ResNet-based U-Net)
+- Higher resolution inputs
+- Longer training with early stopping
+
+---
+
+## Key Takeaway
+
+This project demonstrates:
+- A complete ML training pipeline
+- Correct handling of class imbalance
+- Proper train/validation/test evaluation
+- Systematic debugging and iteration
+
+The focus is on **methodology and reasoning**, not peak accuracy.
+
+---
+
+## One-Line Summary
+
+Built and debugged an end-to-end binary segmentation pipeline on COCO using PyTorch and U-Net, addressing class imbalance via loss design and data scaling, and evaluating performance rigorously using IoU and Dice.
