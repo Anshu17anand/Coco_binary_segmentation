@@ -74,6 +74,6 @@ Common failure cases include:
 - Truncated objects near image borders
 
 ---
+<img width="1500" height="500" alt="image" src="https://github.com/user-attachments/assets/1d39f62b-2a66-44d7-a9e2-c36f979c73da" />
 
-## Project Structure
 
