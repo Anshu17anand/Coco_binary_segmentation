@@ -51,8 +51,8 @@ Splits are created using image IDs to prevent data leakage.
 - **IoU (Intersection over Union):** Derived from Dice for reporting
 
 Final metrics:
-- **Validation Dice:** ~0.24 (IoU ~0.14)
-- **Test Dice:** ~0.21 (IoU ~0.12)
+- **Validation Dice:** ~0.74 (IoU ~0.14)
+- **Test Dice:** ~0.58 (IoU ~0.12)
 
 ---
 
